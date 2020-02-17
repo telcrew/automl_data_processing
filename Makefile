@@ -1,8 +1,8 @@
 # The binary to build (just the basename).
-MODULE := blueprint
+MODULE := vanilla_project
 
 # Where to push the docker image.
-REGISTRY ?= docker.pkg.github.com/martinheinz/python-project-blueprint
+REGISTRY ?= docker.pkg.github.com/telcrew/vanilla_project
 
 IMAGE := $(REGISTRY)/$(MODULE)
 
@@ -11,6 +11,20 @@ TAG := $(shell git describe --tags --always --dirty)
 
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+VENV_NAME?=./.venv
+VENV_ACTIVATE=. $(VENV_NAME)/bin/activate
+PYTHON=${VENV_NAME}/bin/python
+PIPCOMPILE=${VENV_NAME}/bin/pip-compile
+
+venv: 
+	test -d $(VENV_NAME) || python3.6 -m venv $(VENV_NAME)
+	${VENV_ACTIVATE}
+	${PYTHON} -m pip install -U pip
+	${PYTHON} -m pip install pip-tools
+	# ${PIPCOMPILE} --output-file requirements.txt requirements.in
+	${PYTHON} -m pip install -r requirements.txt
+	# ${PYTHON} -m pip install -e .
 
 run:
 	@python -m $(MODULE)
@@ -65,7 +79,7 @@ push: build-prod
 version:
 	@echo $(TAG)
 
-.PHONY: clean image-clean build-prod push test
+.PHONY: venv clean image-clean build-prod push test
 
 clean:
 	rm -rf .pytest_cache .coverage .pytest_cache coverage.xml
