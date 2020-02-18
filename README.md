@@ -1,3 +1,17 @@
+# Foreword
+
+Adapted from the original by Martin Heinz with few on-going customisations:
+
+* local venv 
+* make test fails: modify context.py as follows:
+
+        import sys
+        import os
+        import vanilla_project as app
+        ...
+
+    
+
 # Blueprint/Boilerplate For Python Projects
 
 [![Build, Test and Lint Action](https://github.com/MartinHeinz/python-project-blueprint/workflows/Build,%20Test,%20Lint/badge.svg)](https://github.com/MartinHeinz/python-project-blueprint/workflows/Build,%20Test,%20Lint/badge.svg)
@@ -16,7 +30,9 @@ You can find more information about this project/repository and how to use it in
 To use this repository as starter for your project you can run `configure_project.sh` script, which sets up all variables and file names. This way you can avoid configuring and renaming things yourself:
 
 ```shell
-./configure_project.sh MODULE="coolproject" REGISTRY="docker.pkg.github.com/martinheinz/repo-name"
+make venv
+
+sudo ./configure_project.sh MODULE="coolproject" REGISTRY="docker.pkg.github.com/martinheinz/repo-name"
 ```
 
 ## Running
