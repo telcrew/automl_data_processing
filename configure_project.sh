@@ -13,6 +13,9 @@ do
 
 done
 
+make venv
+source ./.venv/bin/activate
+
 DUMMY_MODULE='vanilla_project'
 DUMMY_REGISTRY='docker.pkg.github.com/telcrew/vanilla_project'
 BLUE='\033[0;34m'
