@@ -30,10 +30,15 @@ You can find more information about this project/repository and how to use it in
 To use this repository as starter for your project you can run `configure_project.sh` script, which sets up all variables and file names. This way you can avoid configuring and renaming things yourself:
 
 ```shell
-make venv
-
-sudo ./configure_project.sh MODULE="coolproject" REGISTRY="docker.pkg.github.com/martinheinz/repo-name"
+./configure_project.sh MODULE="vanilla_project" REGISTRY="docker.pkg.github.com/telcrew/vanilla_project"
 ```
+
+ensure 
+
+        /home/[user]/.docker/config.json and 
+        /home/[user]/.docker/ 
+
+are owned by local user.
 
 ## Running
 

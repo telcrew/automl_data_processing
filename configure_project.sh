@@ -34,10 +34,16 @@ sed -i s/$DUMMY_MODULE/$MODULE/g Makefile
 
 echo -e "\n${BLUE}Testing if everything works...${NC}\n"
 
+echo -e "\n${BLUE}Test: make venv${NC}\n"
+make venv
+
+echo -e "\n${BLUE}Test: source ./.venv/bin/activate\n"
+source ./.venv/bin/activate
+
 echo -e "\n${BLUE}Test: make run${NC}\n"
 make run
 echo -e "\n${BLUE}Test: make test${NC}\n"
 make test
 echo -e "\n${BLUE}Test: make build-dev${NC}\n"
-make build-dev
+sudo make build-dev
 
