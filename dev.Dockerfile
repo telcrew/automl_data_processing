@@ -20,7 +20,7 @@ COPY --from=tester /app /app
 
 WORKDIR /app
 
-ENTRYPOINT ["/venv/bin/python3", "-m", "vanilla_project"]
+ENTRYPOINT ["/venv/bin/python3", "-m", "automl_data_processing"]
 USER 1001
 
 LABEL name={NAME}

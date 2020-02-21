@@ -1,0 +1,14 @@
+numpy
+pillow
+opencv-python
+flask
+matplotlib
+pandas
+scipy
+sklearn
+screeninfo
+PyYAML
+autopep8
+loguru
+pytest
+pytest-cov

@@ -1,8 +1,8 @@
 # The binary to build (just the basename).
-MODULE := vanilla_project
+MODULE := automl_data_processing
 
 # Where to push the docker image.
-REGISTRY ?= docker.pkg.github.com/telcrew/vanilla_project
+REGISTRY ?= docker.pkg.github.com/telcrew/automl_data_processing
 
 IMAGE := $(REGISTRY)/$(MODULE)
 
@@ -22,15 +22,28 @@ venv:
 	${VENV_ACTIVATE}
 	${PYTHON} -m pip install -U pip
 	${PYTHON} -m pip install pip-tools
-	# ${PIPCOMPILE} --output-file requirements.txt requirements.in
+	${PIPCOMPILE} --output-file requirements.txt requirements.in
 	${PYTHON} -m pip install -r requirements.txt
-	# ${PYTHON} -m pip install -e .
+	echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | sudo tee /etc/apt/sources.list.d/coral-edgetpu.list
+	curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+	sudo apt-get update
+	sudo apt-get install libedgetpu1-std
+	#wget https://dl.google.com/coral/python/tflite_runtime-1.14.0-cp36-cp36m-linux_x86_64.whl
+	wget https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp36-cp36m-linux_x86_64.whl
+	${PYTHON} -m pip install tflite_runtime-2.1.0.post1-cp36-cp36m-linux_x86_64.whl
+	rm tflite_runtime-2.1.0.post1-cp36-cp36m-linux_x86_64.whl
 
 run:
 	@python -m $(MODULE)
 
 test:
 	@pytest
+
+autopep8: 	
+	$(info # autopep8 code!)
+	${VENV_ACTIVATE} 
+	@python -V
+	@python -m autopep8 --in-place --aggressive ./$(MODULE)/*.py
 
 lint:
 	@echo "\n${BLUE}Running Pylint against source and test files...${NC}\n"
