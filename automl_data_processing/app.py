@@ -10,7 +10,7 @@ class Blueprint:
     @staticmethod
     def run():
         drawer = draw.Drawer()
-        automlprep = automl_prep.AutoMLPrep()
+        automlprep = automl_prep.AutoMLPrep(drawer)
 
         videoreader = video_read.VideoReader()
         inferenceworker = object_detection_inference.InferenceWorker(

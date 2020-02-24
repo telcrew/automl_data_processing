@@ -5,26 +5,54 @@
 # 100 annotations per label
 # 100x more images for the most common label than for the least common label.
 
+# input
+device_video: False
+
+# footage and training dataset management 
+# run multiple times over footage_files, per label, construct TRAIN(80%) VALIDATE(10%) and TEST(10%) datasets
 
 footage_path: "~/projects/footage/"
 footage_files:
+    - back_to_workshop.mp4
+    - back_to_workshop2.mp4
     - 10MinVid_cut.mp4
     - distances_testing_welshpool_floor.mkv
 width: 1024
 height: 1024
-display_height: 1080
-display_width: 1920
-
 model_path: "/models/coraledgetpu"
 model: "mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"
 labels_file: "coco_labels.txt"
-detect_objects: 
-    - all
+detect_objects: # select 1 only
+    # - all
     - person
-    - car   
+    # - car
+    # - bus
+    # - truck
 confidence: 0.7
-
+detect_objects_prefix: ""    #prefix a known label e.g. ppe_person
+dataset_purpose: "VALIDATION"
+dataset_purpose_enum:   # TRAIN(80%) VALIDATE(10%) and TEST(10%)
+    - TRAIN
+    - TEST
+    - VALIDATION
+target_samples: 10
+detection_sampling_rate: 3   # sampling rate of detections - e.g. every 50th detection of 'person' will be recorded in dataset
 image_output_path: "~/projects/footage/automl"
+google_bucket: "gs://forklift_bucket/"
+
+
+
+# display
+display_height: 1080
+display_width: 1920
+object_zoom_on: True
+zoom_delay: 60
+zoom_margin: 0.5
+display_annotate: True
+display_info: True
+
+
+
 
 
 # TRAIN,gs://cloud-ml-data/img/openimage/3/2520/3916261642_0a504acd60_o.jpg,Salad,0.0,0.0954,,,0.977,0.957,,

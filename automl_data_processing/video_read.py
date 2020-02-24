@@ -13,6 +13,7 @@ class VideoReader:
     footage_files = config.CONFIG['footage_files']
     width = config.CONFIG['width']
     height = config.CONFIG['height']
+    device_video = bool(config.CONFIG['device_video'])
 
     currentvideo = None
     default_image_np_global = np.zeros([width, height, 3], dtype=np.uint8)
@@ -36,11 +37,14 @@ class VideoReader:
             self.currentvideo = footage_file
             frame_number = 0
 
-            video = Path(self.footage_path + '/' + footage_file)
-            try:
-                video = expanduser(Path(self.footage_path + '/' + footage_file))
-            except BaseException:
-                pass
+            if self.device_video:
+                video = 0
+            else:
+                video = Path(self.footage_path + '/' + footage_file)
+                try:
+                    video = expanduser(Path(self.footage_path + '/' + footage_file))
+                except BaseException:
+                    pass
 
             cap = cv2.VideoCapture(video)
 

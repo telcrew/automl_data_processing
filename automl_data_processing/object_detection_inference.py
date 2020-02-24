@@ -18,6 +18,8 @@ class InferenceWorker:
     labels_file = str(Path(__file__).parent) + str(Path(model_path) / Path(labels_file))
     detect_objects = config.CONFIG['detect_objects']
     confidence = config.CONFIG['confidence']
+    detection_sampling_rate = int(config.CONFIG['detection_sampling_rate'])
+    target_samples = int(config.CONFIG['target_samples'])
     model = str(Path(__file__).parent) + str(Path(model_path) / Path(model))
     logger = config.logger
 
@@ -43,6 +45,7 @@ class InferenceWorker:
 
         self.videoreader = videoreader
         self.automlprep = automlprep
+
         object_detection_inference_thread = Thread(target=self.object_detection_inference)
         object_detection_inference_thread.start()
         self.logger.debug('object_detection_inference_thread started')
@@ -82,17 +85,24 @@ class InferenceWorker:
     def object_detection_inference(self):
         self.interpreter, self.labels = self.initialise_engine()
 
+        sample_count = 0
+        detection_count = 0
+
         while not config.GLOBAL_EXIT_SIGNAL:
             if not self.new_frame:
                 time_stamp1 = datetime.now()
                 self.detections = []
                 self.frame_meta = {}
 
-                if self.videoreader.capture_frame_rgb is not None:
+                capture_frame_rgb = self.videoreader.capture_frame_rgb
+                currentvideo = self.videoreader.currentvideo
+                frame_number = self.videoreader.frame_number
+
+                if capture_frame_rgb is not None:
                     scale = detect.set_input(
                         self.interpreter,
-                        self.videoreader.capture_frame_rgb.size,
-                        lambda size: self.videoreader.capture_frame_rgb.resize(
+                        capture_frame_rgb.size,
+                        lambda size: capture_frame_rgb.resize(
                             size,
                             Image.ANTIALIAS))
                     self.interpreter.invoke()
@@ -109,8 +119,6 @@ class InferenceWorker:
 
                                 num_detect += 1
 
-                                # xmin, ymin, xmax, ymax = obj.bbox
-
                                 detection = {}
                                 detection['label_id'] = str(obj.id)
                                 detection['label'] = self.labels[obj.id]
@@ -120,26 +128,34 @@ class InferenceWorker:
 
                                 self.detections.append(detection)
 
-                                self.automlprep.automl_save_frame(self.videoreader.capture_frame_rgb,
-                                                      self.videoreader.currentvideo + '_' +
-                                                      str(self.videoreader.frame_number) + '.jpg',
-                                                      self.detections,
-                                                      self.frame_meta,
-                                                      )
-
                         time_stamp2 = datetime.now()
                         inference_time = (time_stamp2 - time_stamp1).microseconds
                         self.logger.debug(self.detections)
 
-                    self.frame_meta['currentvideo'] = self.videoreader.currentvideo
-                    self.frame_meta['frame_number'] = self.videoreader.frame_number
-                    self.frame_meta['resolution'] = self.videoreader.capture_frame_rgb.size
+                    self.frame_meta['currentvideo'] = currentvideo
+                    self.frame_meta['frame_number'] = frame_number
+                    self.frame_meta['resolution'] = capture_frame_rgb.size
                     self.frame_meta['numdetect'] = num_detect
                     self.frame_meta['inference_time'] = inference_time
                     self.logger.debug(self.frame_meta)
 
-                    
+                    if len(self.detections) > 0:
+                        detection_count += 1
+                        if detection_count >= self.detection_sampling_rate:
+                            sample_count += 1
+                            detection_count = 0
+                            self.automlprep.automl_save_frame(capture_frame_rgb,
+                                currentvideo + '_' +
+                                str(frame_number) + '_' + str(len(self.detections)) + detection['label'],
+                                self.detections,
+                                self.frame_meta,
+                                self.objs,
+                                self.labels
+                                )
+                        elif sample_count >= self.target_samples:
+                            config.GLOBAL_EXIT_SIGNAL = True
+                            # self.automlprep.automl_save_csv()
 
                     self.new_frame = True
-        
+
         self.automlprep.automl_save_csv()
