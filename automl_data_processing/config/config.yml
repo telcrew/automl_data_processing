@@ -11,41 +11,65 @@ device_video: False
 # footage and training dataset management 
 # run multiple times over footage_files, per label, construct TRAIN(80%) VALIDATE(10%) and TEST(10%) datasets
 
-footage_path: "~/projects/footage/"
+footage_path: "~/projects/footage/scenarios/"
 footage_files:
-    - back_to_workshop.mp4
-    - back_to_workshop2.mp4
-    - 10MinVid_cut.mp4
-    - distances_testing_welshpool_floor.mkv
+    # - back_to_workshop.mp4
+    # - back_to_workshop2.mp4
+    # - 10MinVid_cut.mp4
+    # - distances_testing_welshpool_floor.mkv
+    - front.mkv
+    - back.mkv
+    - left.mkv
+    - right.mkv
+    # - fl_front.mkv
+    # - fl_back.mkv
+    # - fl_left.mkv
+    # - fl_right.mkv
+    # - welshpool_im_back_yard_barriers.mkv
+    # - welshpool_backyard_crouching.mp4
 width: 1024
 height: 1024
-model_path: "/models/coraledgetpu"
-model: "mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"
+
+model_path: "/models/coraledgetpu/outofbox"
+model_file: "mobilenet_ssd_v2_coco_quant_postprocess_edgetpu.tflite"
 labels_file: "coco_labels.txt"
-detect_objects: # select 1 only
+detect_objects: # select 1 at a run time only
     # - all
+    # - none
     - person
     # - car
     # - bus
     # - truck
+    # - ppe_person
+    # - cone
+    - car
 confidence: 0.7
+
+# model_path: "/models/coraledgetpu/forklift_v001"
+# model_file: "forklift_mobilenetSSDv2_v001_edgetpu.tflite"
+# labels_file: "forklift_labelsv001.txt"
+# detect_objects: # select 1 at a run time only
+#     # - all
+#     # - none
+#     - ppe_person
+#     - cone
+#     - car
+# confidence: 0.35
+
+
 detect_objects_prefix: ""    #prefix a known label e.g. ppe_person
-dataset_purpose: "VALIDATION"
-dataset_purpose_enum:   # TRAIN(80%) VALIDATE(10%) and TEST(10%)
-    - TRAIN
-    - TEST
-    - VALIDATION
-target_samples: 10
-detection_sampling_rate: 3   # sampling rate of detections - e.g. every 50th detection of 'person' will be recorded in dataset
+target_samples: 100   # 0 to not sample
+detection_sampling_rate: 1   # sampling rate of detections - e.g. every 50th detection of 'person' will be recorded in dataset
 image_output_path: "~/projects/footage/automl"
 google_bucket: "gs://forklift_bucket/"
-
+create_annotated_images: True
+detections_history_output_path: "~/projects/footage/automl/detections_history"
 
 
 # display
 display_height: 1080
 display_width: 1920
-object_zoom_on: True
+object_zoom_on: False
 zoom_delay: 60
 zoom_margin: 0.5
 display_annotate: True

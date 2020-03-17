@@ -4,11 +4,11 @@ from . import draw
 from . import display
 from . import automl_prep
 
-
 class Blueprint:
 
     @staticmethod
     def run():
+        print("Hello World...")
         drawer = draw.Drawer()
         automlprep = automl_prep.AutoMLPrep(drawer)
 

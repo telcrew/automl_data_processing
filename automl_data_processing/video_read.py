@@ -35,7 +35,7 @@ class VideoReader:
         for footage_file in self.footage_files:
             self.logger.debug('Processing: ' + footage_file)
             self.currentvideo = footage_file
-            frame_number = 0
+            self.frame_number = 0
 
             if self.device_video:
                 video = 0

@@ -43,18 +43,15 @@ class Displayer:
             if self.inferenceworker.new_frame:
                 image = self.inferenceworker.videoreader.capture_frame_rgb
                 detections = self.inferenceworker.detections
-
+                frame_meta = self.inferenceworker.frame_meta
                 if image and self.inferenceworker.objs:
                     if self.display_annotate:
                         self.drawer.draw_objects(
                             image,
-                            self.inferenceworker.objs,
                             self.inferenceworker.labels,
+                            detections,
                         )
-
                 if image:
-                    frame_meta = self.inferenceworker.frame_meta
-                    self.inferenceworker.new_frame = False
                     if self.display_info:
                         self.drawer.draw_info(
                             image,
@@ -62,14 +59,24 @@ class Displayer:
                         )
                     image_np = np.array(image)
                     image_np = image_np[:, :, ::-1].copy()
+                    self.inferenceworker.new_frame = False
 
                     subimage_np = self.object_zoom(detections, image_np)
                     subimage_np = cv2.resize(subimage_np, (self.display_width, self.display_height))
 
+                    cv2.namedWindow('processing', cv2.WINDOW_NORMAL)
                     cv2.imshow('processing', subimage_np)
-                    if cv2.waitKey(1) & 0xFF == ord('q'):
-                        config.GLOBAL_EXIT_SIGNAL = True
+                    k = cv2.waitKey(33)
+                    if k==113: # q quit  
+                        config.GLOBAL_EXIT_SIGNAL = True  
                         break
+                    elif k==115: # s save frame
+                        config.SAVE_FRAME = True
+                    elif k==-1:  
+                        continue
+                    else:
+                        print(k) 
+                                    
 
     def object_zoom(self, detections, image_np):
         if self.object_zoom_on:

@@ -15,6 +15,7 @@ CONFIG_FILE = Path(CONFIG_DIR) / Path(CONFIG_FILE_NAME)
 logger.debug('Config at: ' + str(CONFIG_FILE))
 
 GLOBAL_EXIT_SIGNAL = False
+SAVE_FRAME = False
 
 def load_yml(config_file):
     logger.debug('Loading config from ' + str(CONFIG_FILE))
